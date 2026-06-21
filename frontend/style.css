@@ -19,3 +19,12 @@ nav {
     color: white;
     padding: 15px;
 }
+
+.product {
+    background-color: white;
+    width: 200px;
+    margin: 20px auto;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px gray;
+}
