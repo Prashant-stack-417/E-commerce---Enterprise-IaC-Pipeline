@@ -5,6 +5,7 @@ body {
     padding: 0;
 }
 
+/* Navigation Bar */
 nav {
     background-color: #333;
     color: white;
@@ -12,21 +13,75 @@ nav {
     text-align: center;
 }
 
+/* Hero Section */
+.hero {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.hero h1 {
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.hero button {
+    background-color: white;
+    color: #007bff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.hero button:hover {
+    background-color: #e6e6e6;
+}
+
+/* Main Heading */
 h1 {
     text-align: center;
     margin-top: 20px;
 }
 
+/* Product Section */
+.products {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Product Card */
 .product {
     background: white;
     width: 300px;
-    margin: 20px auto;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px gray;
     text-align: center;
+    transition: transform 0.3s;
 }
 
+.product:hover {
+    transform: translateY(-5px);
+}
+
+/* Product Images */
+.product img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
 button {
     background-color: blue;
     color: white;
@@ -40,10 +95,26 @@ button:hover {
     background-color: darkblue;
 }
 
+/* Footer */
 footer {
     background-color: #333;
     color: white;
     text-align: center;
     padding: 10px;
     margin-top: 20px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .product {
+        width: 90%;
+    }
+
+    .hero {
+        padding: 30px 15px;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
 }
