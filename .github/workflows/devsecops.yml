@@ -1,4 +1,4 @@
-name: Week1 DevSecOps
+name: DevSecOps Pipeline
 
 on:
   push:
@@ -6,11 +6,18 @@ on:
       - Development
 
 jobs:
-  build:
+  build-and-scan:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Build Docker Image
         run: docker build -t ecommerce-app .
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
