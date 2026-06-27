@@ -6,7 +6,7 @@ resource "random_string" "suffix" {
 
 resource "aws_s3_bucket" "assets" {
   bucket        = "${var.project_name}-assets-${random_string.suffix.result}"
-  force_destroy = true
+  force_destroy = false
 
   # ts:skip=AWS.S3.2 S3 Bucket Access Logging is disabled for this sandbox bucket
   # bridgecrew:skip=CKV_AWS_18: "S3 Access logging is disabled for this sandbox demonstration bucket"

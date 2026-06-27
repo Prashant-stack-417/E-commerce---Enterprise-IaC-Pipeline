@@ -34,6 +34,15 @@ const productIcons = {
     6: '🖥️'  // Monitor
 };
 
+function escapeHtml(value) {
+    return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
     fetchProducts();
@@ -45,7 +54,7 @@ async function fetchProducts() {
     try {
         const response = await fetch('/api/products');
         if (!response.ok) throw new Error('Failed to load products');
-        products = await response.ok ? await response.json() : [];
+        products = await response.json();
         renderProducts();
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -59,19 +68,24 @@ function renderProducts() {
     
     productsGrid.innerHTML = products.map(product => {
         const icon = productIcons[product.id] || '📦';
+        const category = escapeHtml(product.category);
+        const badge = product.badge ? escapeHtml(product.badge) : '';
+        const name = escapeHtml(product.name);
+        const description = escapeHtml(product.description);
+        const price = Number(product.price) || 0;
         return `
             <div class="product-card">
                 <div class="card-header">
-                    <span class="category">${product.category}</span>
-                    ${product.badge ? `<span class="badge">${product.badge}</span>` : ''}
+                    <span class="category">${category}</span>
+                    ${badge ? `<span class="badge">${badge}</span>` : ''}
                 </div>
                 <div class="product-image-container">
                     <span class="product-icon">${icon}</span>
                 </div>
-                <h3 class="product-title">${product.name}</h3>
-                <p class="product-description">${product.description}</p>
+                <h3 class="product-title">${name}</h3>
+                <p class="product-description">${description}</p>
                 <div class="card-footer">
-                    <span class="price">$${product.price.toFixed(2)}</span>
+                    <span class="price">$${price.toFixed(2)}</span>
                     <button class="add-to-cart-btn" onclick="addToCart(${product.id})">Add to Cart</button>
                 </div>
             </div>
@@ -80,7 +94,7 @@ function renderProducts() {
 }
 
 // Add item to cart
-window.addToCart = function(productId) {
+globalThis.addToCart = function(productId) {
     const existing = cart.find(item => item.product_id === productId);
     if (existing) {
         existing.quantity += 1;
@@ -92,7 +106,7 @@ window.addToCart = function(productId) {
 };
 
 // Remove or adjust quantity
-window.changeQuantity = function(productId, delta) {
+globalThis.changeQuantity = function(productId, delta) {
     const item = cart.find(item => item.product_id === productId);
     if (!item) return;
     
@@ -125,13 +139,15 @@ function updateCart() {
     cartItemsContainer.innerHTML = cart.map(item => {
         const product = products.find(p => p.id === item.product_id);
         if (!product) return '';
-        const itemTotal = product.price * item.quantity;
+        const productName = escapeHtml(product.name);
+        const price = Number(product.price) || 0;
+        const itemTotal = price * item.quantity;
         subtotal += itemTotal;
         return `
             <div class="cart-item">
                 <div class="cart-item-info">
-                    <div class="cart-item-title">${product.name}</div>
-                    <div class="cart-item-price">$${product.price.toFixed(2)}</div>
+                    <div class="cart-item-title">${productName}</div>
+                    <div class="cart-item-price">$${price.toFixed(2)}</div>
                 </div>
                 <div class="cart-item-qty">
                     <button class="qty-btn" onclick="changeQuantity(${product.id}, -1)">-</button>
