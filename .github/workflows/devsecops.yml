@@ -19,7 +19,27 @@ jobs:
       - name: Build Docker Image
         run: docker build -t ecommerce-app .
 
+      - name: Check SonarQube availability
+        id: sonar_precheck
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -z "${SONAR_TOKEN}" ] || [ -z "${SONAR_HOST_URL}" ]; then
+            echo "::warning::Skipping SonarQube scan because SONAR_TOKEN or SONAR_HOST_URL is not configured."
+            echo "run_scan=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if curl --silent --show-error --fail --max-time 10 "${SONAR_HOST_URL}/api/system/status" > /dev/null; then
+            echo "run_scan=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Skipping SonarQube scan because SONAR_HOST_URL is unreachable from this runner."
+            echo "run_scan=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: SonarQube Scan
+        if: steps.sonar_precheck.outputs.run_scan == 'true'
         uses: SonarSource/sonarqube-scan-action@v7.2.1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
