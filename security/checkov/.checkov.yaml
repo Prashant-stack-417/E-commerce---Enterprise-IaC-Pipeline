@@ -1,0 +1,10 @@
+# Checkov IaC Security Scanner Configuration
+directory:
+  - terraform
+  - kubernetes
+framework:
+  - terraform
+  - kubernetes
+output: cli
+quiet: false
+soft-fail: false
