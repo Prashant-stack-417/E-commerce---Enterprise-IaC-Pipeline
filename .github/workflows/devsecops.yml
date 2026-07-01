@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - Development
+  pull_request:
+    branches:
+      - main
+      - Development
 
 permissions:
   contents: read
@@ -14,13 +18,31 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Validate Sonar Configuration
+        shell: bash
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -z "${SONAR_TOKEN}" ]; then
+            echo "::error::SONAR_TOKEN is missing. Add it in repository or organization secrets."
+            exit 1
+          fi
+          if [ -z "${SONAR_HOST_URL}" ]; then
+            echo "::warning::SONAR_HOST_URL is not set. This is required for SonarQube Server and optional for SonarQube Cloud."
+          fi
 
       - name: Build Docker Image
         run: docker build -t ecommerce-app .
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v7.2.1
+        uses: SonarSource/sonarqube-scan-action@v8.2.0
+        with:
+          skipSignatureVerification: false
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
