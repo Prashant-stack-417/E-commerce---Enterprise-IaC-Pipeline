@@ -11,7 +11,7 @@ resource "aws_vpc" "main" {
 # Subnets
 resource "aws_subnet" "public_1" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, 1)
   availability_zone       = "${var.aws_region}a"
   map_public_ip_on_launch = true
 
@@ -23,7 +23,7 @@ resource "aws_subnet" "public_1" {
 
 resource "aws_subnet" "public_2" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.2.0/24"
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, 2)
   availability_zone       = "${var.aws_region}b"
   map_public_ip_on_launch = true
 
@@ -35,7 +35,7 @@ resource "aws_subnet" "public_2" {
 
 resource "aws_subnet" "private_1" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.11.0/24"
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, 11)
   availability_zone = "${var.aws_region}a"
 
   tags = {
@@ -46,7 +46,7 @@ resource "aws_subnet" "private_1" {
 
 resource "aws_subnet" "private_2" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.12.0/24"
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, 12)
   availability_zone = "${var.aws_region}b"
 
   tags = {
@@ -166,7 +166,13 @@ resource "aws_iam_role_policy" "vpc_flow_logs" {
       {
         Action = [
           "logs:CreateLogStream",
-          "logs:PutLogEvents",
+          "logs:PutLogEvents"
+        ]
+        Effect   = "Allow"
+        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
+      },
+      {
+        Action = [
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams"
         ]

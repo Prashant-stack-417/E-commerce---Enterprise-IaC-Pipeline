@@ -32,6 +32,5 @@ variable "db_username" {
 variable "db_password" {
   type        = string
   description = "Database administrator password"
-  default     = "SecurePass123!"
   sensitive   = true
 }

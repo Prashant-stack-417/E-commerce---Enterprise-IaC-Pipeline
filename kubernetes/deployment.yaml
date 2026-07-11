@@ -34,7 +34,10 @@ spec:
             readOnlyRootFilesystem: false
           env:
             - name: DATABASE_URL
-              value: "postgresql://postgres:password@ecommerce-db:5432/ecommerce"
+              valueFrom:
+                secretKeyRef:
+                  name: ecommerce-app-secrets
+                  key: database_url
             - name: AWS_REGION
               value: "us-east-1"
           resources:
